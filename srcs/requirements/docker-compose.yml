@@ -1,0 +1,28 @@
+version: '2.39.3'
+services:
+  mariadb:
+    build: ./srcs/requirements/mariadb/
+    image: ismailenniou/mr:v1.0
+    ports:
+      - target: 3306
+        published: 3306
+    networks:
+      - counter-net
+    volumes:
+      - ./mariadb_data:/Users/ien-niou/Desktop/inception/store
+    restart: on-failure
+    secrets:
+      - db_password
+      - db_root_password
+
+networks:
+  counter-net:
+
+volumes:
+  counter-vol:
+
+secrets:
+  db_password:
+    file: ../../secrets/db_password.txt
+  db_root_password:
+    file: ../../secrets/db_root_password.txt
