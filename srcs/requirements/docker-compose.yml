@@ -1,7 +1,6 @@
-version: '2.39.3'
 services:
   mariadb:
-    build: ./srcs/requirements/mariadb/
+    build: ./mariadb/
     image: ismailenniou/mr:v1.0
     ports:
       - target: 3306
@@ -9,17 +8,31 @@ services:
     networks:
       - counter-net
     volumes:
-      - ./mariadb_data:/Users/ien-niou/Desktop/inception/store
+      - mariadb_data:/var/lib/mysql
     restart: on-failure
     secrets:
       - db_password
       - db_root_password
 
+  nginx:
+    build: ./nginx/
+    image: ismailenniou/nginx:v1.0
+    ports:
+      - target: 80
+        published: 80
+      - target: 443
+        published: 443
+    networks:
+      - counter-net
+    depends_on:
+      - mariadb
+    restart: on-failure
+
 networks:
   counter-net:
 
 volumes:
-  counter-vol:
+  mariadb_data:
 
 secrets:
   db_password:
