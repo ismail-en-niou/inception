@@ -27,11 +27,10 @@ services:
     environment:  
       WORDPRESS_DB_HOST: mariadb:3306
       WORDPRESS_DB_USER: wp_user
-      WORDPRESS_DB_PASSWORD: "ien-niou"
       WORDPRESS_DB_NAME: wordpress_db
-
     secrets:
       - db_password
+      - wp_admin_password
 
   nginx:
     build: ./nginx/
@@ -45,6 +44,9 @@ services:
     networks:
       - inception
     restart: on-failure
+    volumes:
+      - wordpress_data:/var/www/wordpress
+    
 
 networks:
   inception:
@@ -60,3 +62,5 @@ secrets:
     file: ../../secrets/db_password.txt
   db_root_password:
     file: ../../secrets/db_root_password.txt
+  wp_admin_password:
+    file: ../../secrets/wp_admin_password.txt
