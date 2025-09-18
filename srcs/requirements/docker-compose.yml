@@ -1,12 +1,12 @@
 services:
   mariadb:
     build: ./mariadb/
-    image: ismailenniou/mr:v1.0
+    container_name: mariadb
+    image: ismailenniou/mariadb:v1.0
     ports:
-      - target: 3306
-        published: 3306
+      - "3306:3306"
     networks:
-      - counter-net
+      - inception
     volumes:
       - mariadb_data:/var/lib/mysql
     restart: on-failure
@@ -14,25 +14,46 @@ services:
       - db_password
       - db_root_password
 
-  nginx:
-    build: ./nginx/
-    image: ismailenniou/nginx:v1.0
-    ports:
-      - target: 80
-        published: 80
-      - target: 443
-        published: 443
-    networks:
-      - counter-net
+  wordpress:
+    build: ./wordpress
+    container_name: wordpress
+    image: ismailenniou/wordpress:v1.0  
     depends_on:
       - mariadb
+    networks:
+      - inception
+    volumes:
+      - wordpress_data:/var/www/wordpress
+    environment:  
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: "ien-niou"
+      WORDPRESS_DB_NAME: wordpress_db
+
+    secrets:
+      - db_password
+
+  nginx:
+    build: ./nginx/
+    container_name: nginx
+    image: ismailenniou/nginx:v1.0
+    depends_on:
+      - wordpress
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - inception
     restart: on-failure
 
 networks:
-  counter-net:
+  inception:
+    driver: bridge
 
 volumes:
   mariadb_data:
+  wordpress_data:
+    driver: local
 
 secrets:
   db_password:

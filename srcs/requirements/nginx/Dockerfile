@@ -1,19 +1,21 @@
 FROM debian:11
 
-# Install Nginx and OpenSSL
 RUN apt-get update && apt-get install -y \
     nginx \
     openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# Create SSL directory
+RUN groupadd -r nginx && useradd -r -g nginx nginx
+
 RUN mkdir -p /etc/nginx/ssl
 
-# Set working directory
-WORKDIR /etc/nginx
+COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY conf/conf.d/default.conf /etc/nginx/conf.d/default.conf
+COPY conf/setup_nginx.sh /usr/local/bin/setup_nginx.sh
 
-# Expose HTTP and HTTPS ports
-EXPOSE 80 443
+RUN chmod +x /usr/local/bin/setup_nginx.sh
 
-# Start Nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 443
+
+CMD [ "/usr/local/bin/setup_nginx.sh" ]
+
