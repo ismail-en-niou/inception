@@ -1,6 +1,6 @@
 services:
   mariadb:
-    build: ./mariadb/
+    build: ./mariadb
     container_name: mariadb
     image: ismailenniou/mariadb:v1.0
     ports:
@@ -13,40 +13,44 @@ services:
     secrets:
       - db_password
       - db_root_password
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wpuser
 
   wordpress:
     build: ./wordpress
     container_name: wordpress
-    image: ismailenniou/wordpress:v1.0  
+    image: ismailenniou/wordpress:v1.0
     depends_on:
       - mariadb
     networks:
       - inception
     volumes:
       - wordpress_data:/var/www/wordpress
-    environment:  
-      WORDPRESS_DB_HOST: mariadb:3306
-      WORDPRESS_DB_USER: wp_user
-      WORDPRESS_DB_NAME: wordpress_db
+    ports:
+      - "9000:9000"
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wpuser
+      DOMAIN_NAME: https://ien-niou.42.fr
     secrets:
       - db_password
       - wp_admin_password
+    restart: on-failure
 
   nginx:
-    build: ./nginx/
+    build: ./nginx
     container_name: nginx
     image: ismailenniou/nginx:v1.0
     depends_on:
       - wordpress
     ports:
-      - "80:80"
       - "443:443"
     networks:
       - inception
     restart: on-failure
     volumes:
       - wordpress_data:/var/www/wordpress
-    
 
 networks:
   inception:
@@ -55,7 +59,6 @@ networks:
 volumes:
   mariadb_data:
   wordpress_data:
-    driver: local
 
 secrets:
   db_password:
@@ -64,3 +67,5 @@ secrets:
     file: ../../secrets/db_root_password.txt
   wp_admin_password:
     file: ../../secrets/wp_admin_password.txt
+  mariadb_root_password:
+    file: ../../secrets/mariadb_root_password.txt

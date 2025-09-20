@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-WORKDIR=/var/www/html
+WORKDIR=/var/www/wordpress
 cd $WORKDIR
 
 # Read secrets
@@ -26,11 +26,12 @@ if [ ! -f "$WORKDIR/wp-config.php" ]; then
     echo "WordPress config not found, installing..."
     
     # Download WordPress
-    wp core download --locale=en_US --allow-root
+    wp core download --locale=en_US --allow-root --path=$WORKDIR
     echo "WordPress downloaded."
     
     # Create wp-config.php
     wp config create --allow-root \
+        --path=$WORKDIR \
         --dbname="$DB_NAME" \
         --dbuser="$DB_USER" \
         --dbpass="$DB_PASSWORD" \
@@ -40,6 +41,7 @@ if [ ! -f "$WORKDIR/wp-config.php" ]; then
     
     # Install WordPress
     wp core install --allow-root \
+        --path=$WORKDIR \
         --url="$DOMAIN_NAME" \
         --title="My WordPress Site" \
         --admin_user="$WP_ADMIN" \
@@ -51,9 +53,9 @@ fi
 echo "WordPress setup complete."
 
 # Ensure wp-config.php exists (in case of volume mount)
-if [ ! -f wp-config.php ]; then
+if [ ! -f "$WORKDIR/wp-config.php" ]; then
   echo "Creating fallback wp-config.php..."
-  cat > wp-config.php <<EOL
+  cat > "$WORKDIR/wp-config.php" <<EOL
 <?php
 define('DB_NAME', '${DB_NAME}');
 define('DB_USER', '${DB_USER}');
