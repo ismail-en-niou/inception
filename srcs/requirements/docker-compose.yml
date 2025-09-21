@@ -8,14 +8,14 @@ services:
     networks:
       - inception
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - /home/ien-niou/data/mariadb_data:/var/lib/mysql
     restart: on-failure
     secrets:
       - db_password
       - db_root_password
     environment:
-      MARIADB_DATABASE: wordpress
-      MARIADB_USER: wpuser
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
 
   wordpress:
     build: ./wordpress
@@ -26,13 +26,13 @@ services:
     networks:
       - inception
     volumes:
-      - wordpress_data:/var/www/wordpress
+      - /home/ien-niou/data/wordpress_data:/var/www/wordpress
     ports:
       - "9000:9000"
     environment:
-      MARIADB_DATABASE: wordpress
-      MARIADB_USER: wpuser
-      DOMAIN_NAME: https://ien-niou.42.fr
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      DOMAIN_NAME: ${DOMAIN_NAME}
     secrets:
       - db_password
       - wp_admin_password
@@ -50,8 +50,37 @@ services:
       - inception
     restart: on-failure
     volumes:
-      - wordpress_data:/var/www/wordpress
+      - /home/ien-niou/data/wordpress_data:/var/www/wordpress
+    environment:
+      NGINX_HOST: ${DOMAIN_NAME}
+      NGINX_PORT: ${NGINX_PORT}
+  redis:
+    build: ./bonus/redis/
+    container_name: redis
+    image: ismailenniou/redis:v1.0
+    ports:
+      - "6379:6379"
+    networks:
+      - inception
+    restart: on-failure
+    volumes:
+      - /home/ien-niou/data/redis_data:/data
 
+  ftp:
+    build: ./bonus/ftp/
+    container_name: ftp
+    image: ismailenniou/ftp:v1.0
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    networks:
+      - inception
+    restart: on-failure
+    volumes:
+      - /home/ien-niou/data/wordpress_data:/var/www/wordpress
+    environment:
+      FTP_USER: ${FTP_USER}
+      FTP_PASSWORD: ${FTP_PASSWORD}
 networks:
   inception:
     driver: bridge
@@ -59,6 +88,7 @@ networks:
 volumes:
   mariadb_data:
   wordpress_data:
+  redis_data:
 
 secrets:
   db_password:

@@ -48,5 +48,7 @@ if [ -f "$WEB_ROOT/index.nginx-debian.html" ] && [ ! -f "$WEB_ROOT/index.php" ];
     rm -f "$WEB_ROOT/index.nginx-debian.html"
 fi
 
+envsubst '${NGINX_HOST} ${NGINX_PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+
 echo "Starting Nginx..."
 nginx -g "daemon off;"

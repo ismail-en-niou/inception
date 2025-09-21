@@ -1,0 +1,20 @@
+# Ignore secrets
+
+!secrets/.gitkeep  # Keep directory structure if needed
+
+# Ignore env files
+.env
+.env.*
+
+# Ignore logs
+*.log
+
+
+.DS_Store
+Thumbs.db
+
+# Ignore editor/project settings
+.vscode/
+.idea/
+*.swp
+*~
