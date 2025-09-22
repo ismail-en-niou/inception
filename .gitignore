@@ -2,10 +2,6 @@
 
 !secrets/.gitkeep  # Keep directory structure if needed
 
-# Ignore env files
-.env
-.env.*
-
 # Ignore logs
 *.log
 
