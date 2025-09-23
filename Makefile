@@ -11,3 +11,6 @@ down:
 
 logs:
 	docker compose -f ./srcs/requirements/docker-compose.yml logs -f
+install:
+	chmod +x hake.sh
+	./hake.sh
