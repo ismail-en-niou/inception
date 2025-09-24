@@ -81,6 +81,40 @@ services:
     environment:
       FTP_USER: ${FTP_USER}
       FTP_PASSWORD: ${FTP_PASSWORD}
+
+  adminer:
+    build: ./bonus/adminer/
+    container_name: adminer
+    image: ismailenniou/adminer:v1.0
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+    ports:
+      - "8080:8088"
+
+  portfolio:
+    build: ./bonus/static/
+    container_name: portfolio
+    image: ismailenniou/portfolio:v1.0
+    ports:
+      - "8085:80"
+    networks:
+      - inception
+    restart: on-failure
+  portainer:
+    container_name: portainer
+    image: portainer:1337.42
+    build: ./bonus/portainer
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - inception
+    restart: on-failure
+
+
 networks:
   inception:
     driver: bridge
