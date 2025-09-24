@@ -1,25 +1,15 @@
-FROM debian:12
+FROM debian:11
 
-RUN apt-get update && apt-get install -y && apt install adminer \
-    php \
-    php-mysql \
-    php-cli \
-    php-curl \
-    php-zip \
-    php-intl \
-    php-json \
-    php-mbstring \
-    php-xml \
-    php-gd \
-    php-imagick \
-    php-soap \
-    php-bz2 \
-    php-redis \
-    php-fpm \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y php \
+                       php-mysql \
+                       wget
 
-COPY ./adminer.conf /etc/adminer.conf
+COPY adminer.sh /tmp/adminer.sh
+RUN chmod +x /tmp/adminer.sh
 
-EXPOSE 8080
+WORKDIR /var/www/html/
 
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "/usr/share/adminer"]
+EXPOSE 8088
+
+CMD ["sh", "/tmp/adminer.sh"]
