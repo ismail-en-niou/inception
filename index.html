@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inception Project - Complete Docker & DevOps Guide</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'docker-blue': '#2496ED',
+            'devops-purple': '#7E69AB',
+            'dark-bg': '#0F172A',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    }
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .nav-link {
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #2496ED;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    .active-nav::after {
+      width: 100%;
+    }
+    .code-block {
+      background-color: #1E293B;
+      border-left: 4px solid #2496ED;
+    }
+    .diagram-container {
+      background: linear-gradient(145deg, #1E293B 0%, #334155 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .architecture-layer {
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .architecture-layer:hover {
+      transform: scale(1.02);
+    }
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background-color: #2496ED;
+      color: white;
+      border-radius: 50%;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <!-- Header -->
+  <header class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <i class="fab fa-docker text-3xl text-docker-blue"></i>
+          <div>
+            <h1 class="text-2xl font-bold">Inception Project</h1>
+            <p class="text-sm text-blue-200">Complete Docker & DevOps Implementation Guide</p>
+          </div>
+        </div>
+        <nav class="hidden md:flex space-x-8">
+          <a href="#overview" class="nav-link active-nav">Overview</a>
+          <a href="#containers-vms" class="nav-link">Containers vs VMs</a>
+          <a href="#docker-architecture" class="nav-link">Docker Architecture</a>
+          <a href="#implementation" class="nav-link">Implementation</a>
+          <a href="#bonus" class="nav-link">Bonus</a>
+        </nav>
+        <button class="md:hidden text-xl">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="gradient-bg text-white py-16">
+    <div class="container mx-auto px-6 text-center">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">Master Docker with the Inception Project</h2>
+        <p class="text-xl mb-8 text-blue-200">A comprehensive DevOps exercise to deepen your system administration skills through containerization</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="#containers-vms" class="bg-docker-blue hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+            <i class="fas fa-play-circle mr-2"></i>Start Learning
+          </a>
+          <a href="#implementation" class="bg-devops-purple hover:bg-purple-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+            <i class="fas fa-code mr-2"></i>View Implementation
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container mx-auto px-6 py-12 space-y-16">
+    
+    <!-- Overview Section -->
+    <section id="overview" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Project Overview</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+          <div class="flex items-center mb-4">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+              <i class="fas fa-bullseye text-docker-blue text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Project Goals</h3>
+          </div>
+          <ul class="list-disc ml-5 space-y-2">
+            <li>Master Docker containerization concepts</li>
+            <li>Build a multi-service infrastructure with Docker Compose</li>
+            <li>Implement proper networking and volume management</li>
+            <li>Secure services with TLS and proper configuration</li>
+            <li>Follow DevOps best practices for container management</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+          <div class="flex items-center mb-4">
+            <div class="bg-purple-100 p-3 rounded-full mr-4">
+              <i class="fas fa-tasks text-devops-purple text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Requirements</h3>
+          </div>
+          <ul class="list-disc ml-5 space-y-2">
+            <li>Virtual Machine environment</li>
+            <li>Docker & Docker Compose installed</li>
+            <li>Three services: NGINX, WordPress, MariaDB</li>
+            <li>Two persistent volumes</li>
+            <li>Custom Docker network</li>
+            <li>TLS encryption (v1.2 or v1.3)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Containers vs VMs Section -->
+    <section id="containers-vms" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Containers vs Virtual Machines</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+
+      <!-- What is a Container -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-4 flex items-center">
+          <i class="fas fa-box text-docker-blue mr-2"></i> What is a Container?
+        </h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="mb-4">A container is a standardized unit of software that packages code and all its dependencies so the application runs quickly and reliably from one computing environment to another.</p>
+            <div class="bg-blue-50 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold text-blue-800 mb-2">Key Characteristics:</h4>
+              <ul class="list-disc ml-5 space-y-1">
+                <li><strong>Isolation:</strong> Process-level isolation using kernel features</li>
+                <li><strong>Portability:</strong> Runs consistently across different environments</li>
+                <li><strong>Lightweight:</strong> Shares host OS kernel, minimal overhead</li>
+                <li><strong>Fast Startup:</strong> Starts in seconds, not minutes</li>
+                <li><strong>Microservices:</strong> Ideal for microservices architecture</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex items-center justify-center">
+            <div class="bg-gray-100 p-4 rounded-lg w-full">
+              <div class="text-center font-semibold mb-2">Container Architecture</div>
+              <div class="bg-white border rounded p-3 mb-2">App A</div>
+              <div class="bg-white border rounded p-3 mb-2">App B</div>
+              <div class="bg-white border rounded p-3">App C</div>
+              <div class="bg-blue-200 text-center py-1">Docker Engine</div>
+              <div class="bg-gray-300 text-center py-1">Host Operating System</div>
+              <div class="bg-gray-500 text-white text-center py-1">Infrastructure</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What is a Virtual Machine -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-4 flex items-center">
+          <i class="fas fa-server text-devops-purple mr-2"></i> What is a Virtual Machine (VM)?
+        </h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="mb-4">A virtual machine is a software emulation of a physical computer that runs an operating system and applications. Each VM includes a full copy of an operating system, applications, and virtualized hardware.</p>
+            <div class="bg-purple-50 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold text-purple-800 mb-2">Key Characteristics:</h4>
+              <ul class="list-disc ml-5 space-y-1">
+                <li><strong>Full Isolation:</strong> Complete OS-level isolation</li>
+                <li><strong>Hardware Virtualization:</strong> Emulates physical hardware</li>
+                <li><strong>Heavyweight:</strong> Significant resource overhead</li>
+                <li><strong>Slower Startup:</strong> Boots entire OS, takes minutes</li>
+                <li><strong>Monolithic:</strong> Better for traditional applications</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex items-center justify-center">
+            <div class="bg-gray-100 p-4 rounded-lg w-full">
+              <div class="text-center font-semibold mb-2">VM Architecture</div>
+              <div class="grid grid-cols-2 gap-2 mb-2">
+                <div class="bg-white border rounded p-2 text-sm">App A</div>
+                <div class="bg-white border rounded p-2 text-sm">App B</div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 mb-2">
+                <div class="bg-green-200 text-center py-1 text-sm">Guest OS</div>
+                <div class="bg-green-200 text-center py-1 text-sm">Guest OS</div>
+              </div>
+              <div class="bg-yellow-200 text-center py-1">Hypervisor</div>
+              <div class="bg-gray-300 text-center py-1">Host Operating System</div>
+              <div class="bg-gray-500 text-white text-center py-1">Infrastructure</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why Docker? What problem does it solve? -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-4 flex items-center">
+          <i class="fas fa-question-circle text-green-500 mr-2"></i> Why Docker? What Problem Does It Solve?
+        </h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="mb-4">Docker solves the "it works on my machine" problem by ensuring applications run identically across all environments through containerization.</p>
+            <div class="bg-green-50 p-4 rounded-lg">
+              <h4 class="font-semibold text-green-800 mb-2">Problems Solved by Docker:</h4>
+              <ul class="list-disc ml-5 space-y-2">
+                <li><strong>Environment Consistency:</strong> Eliminates "works on my machine" issues</li>
+                <li><strong>Dependency Management:</strong> Packages all dependencies together</li>
+                <li><strong>Deployment Speed:</strong> Rapid deployment and scaling</li>
+                <li><strong>Resource Efficiency:</strong> Better utilization of system resources</li>
+                <li><strong>DevOps Enablement:</strong> Facilitates CI/CD pipelines</li>
+                <li><strong>Microservices Support:</strong> Ideal architecture for modern apps</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="bg-red-50 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold text-red-800 mb-2">Before Docker (Problems):</h4>
+              <ul class="list-disc ml-5 space-y-1">
+                <li>Different environments (dev, test, prod) with inconsistencies</li>
+                <li>Dependency conflicts and version issues</li>
+                <li>Long setup and configuration times</li>
+                <li>Difficult to replicate issues across environments</li>
+                <li>Resource-intensive virtualization</li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <h4 class="font-semibold text-blue-800 mb-2">With Docker (Solutions):</h4>
+              <ul class="list-disc ml-5 space-y-1">
+                <li>Identical environments across all stages</li>
+                <li>Isolated dependencies per application</li>
+                <li>Quick setup with container images</li>
+                <li>Easy replication and debugging</li>
+                <li>Efficient resource usage</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-2xl font-semibold mb-6 text-center">Detailed Comparison: Docker Containers vs Virtual Machines</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border border-gray-300 px-4 py-3 text-left">Aspect</th>
+                <th class="border border-gray-300 px-4 py-3 text-left">Docker Containers</th>
+                <th class="border border-gray-300 px-4 py-3 text-left">Virtual Machines</th>
+                <th class="border border-gray-300 px-4 py-3 text-left">Best Use Cases</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-gray-300 px-4 py-3 font-medium">Performance</td>
+                <td class="border border-gray-300 px-4 py-3">Near-native performance, minimal overhead</td>
+                <td class="border border-gray-300 px-4 py-3">Performance overhead due to hardware virtualization</td>
+                <td class="border border-gray-300 px-4 py-3">Containers: High-performance applications<br>VMs: Legacy applications</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <td class="border border-gray-300 px-4 py-3 font-medium">Isolation Level</td>
+                <td class="border border-gray-300 px-4 py-3">Process-level isolation using namespaces and cgroups</td>
+                <td class="border border-gray-300 px-4 py-3">Full OS-level isolation with virtualized hardware</td>
+                <td class="border border-gray-300 px-4 py-3">Containers: Multi-tenant applications<br>VMs: Strong security requirements</td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 px-4 py-3 font-medium">Startup Time</td>
+                <td class="border border-gray-300 px-4 py-3">Seconds (shared kernel, no OS boot)</td>
+                <td class="border border-gray-300 px-4 py-3">Minutes (full OS boot required)</td>
+                <td class="border border-gray-300 px-4 py-3">Containers: Microservices, scaling<br>VMs: Stable, long-running services</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <td class="border border-gray-300 px-4 py-3 font-medium">Resource Usage</td>
+                <td class="border border-gray-300 px-4 py-3">Minimal (MBs per container)</td>
+                <td class="border border-gray-300 px-4 py-3">Significant (GBs per VM)</td>
+                <td class="border border-gray-300 px-4 py-3">Containers: Resource-constrained environments<br>VMs: Dedicated resource allocation</td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 px-4 py-3 font-medium">Portability</td>
+                <td class="border border-gray-300 px-4 py-3">High (consistent across any Docker host)</td>
+                <td class="border border-gray-300 px-4 py-3">Medium (VM format compatibility issues)</td>
+                <td class="border border-gray-300 px-4 py-3">Containers: Hybrid cloud deployments<br>VMs: Homogeneous environments</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <td class="border border-gray-300 px-4 py-3 font-medium">Security</td>
+                <td class="border border-gray-300 px-4 py-3">Good (namespace isolation) but shared kernel risks</td>
+                <td class="border border-gray-300 px-4 py-3">Excellent (complete isolation)</td>
+                <td class="border border-gray-300 px-4 py-3">Containers: Trusted environments<br>VMs: Multi-tenant untrusted environments</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Docker Architecture Section -->
+    <section id="docker-architecture" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Docker Architecture</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+
+      <!-- Docker Architecture Layers -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-6 flex items-center">
+          <i class="fas fa-layer-group text-docker-blue mr-2"></i> Docker Architecture - Explanation of Different Layers
+        </h3>
+        
+        <div class="mb-6">
+          <p class="mb-4">Docker uses a client-server architecture with several components working together to build, run, and manage containers.</p>
+        </div>
+        
+        <div class="space-y-4 mb-8">
+          <div class="architecture-layer bg-blue-50 border-l-4 border-blue-500">
+            <h4 class="font-semibold text-lg mb-2">1. Docker Client</h4>
+            <p>The primary way users interact with Docker. The client sends commands to the Docker daemon, which carries them out.</p>
+            <ul class="list-disc ml-5 mt-2">
+              <li>Command-line interface (CLI)</li>
+              <li>REST API for programmatic access</li>
+              <li>Can connect to local or remote daemons</li>
+            </ul>
+          </div>
+          
+          <div class="architecture-layer bg-green-50 border-l-4 border-green-500">
+            <h4 class="font-semibold text-lg mb-2">2. Docker Daemon (dockerd)</h4>
+            <p>The core Docker engine that runs on the host machine and manages Docker objects like images, containers, networks, and volumes.</p>
+            <ul class="list-disc ml-5 mt-2">
+              <li>Listens for Docker API requests</li>
+              <li>Manages Docker objects</li>
+              <li>Can communicate with other daemons</li>
+            </ul>
+          </div>
+          
+          <div class="architecture-layer bg-purple-50 border-l-4 border-purple-500">
+            <h4 class="font-semibold text-lg mb-2">3. Docker Registry</h4>
+            <p>A storage and distribution system for Docker images. Docker Hub is the default public registry, but you can run your own private registry.</p>
+            <ul class="list-disc ml-5 mt-2">
+              <li>Stores Docker images</li>
+              <li>Public (Docker Hub) and private options</li>
+              <li>Image versioning and distribution</li>
+            </ul>
+          </div>
+          
+          <div class="architecture-layer bg-yellow-50 border-l-4 border-yellow-500">
+            <h4 class="font-semibold text-lg mb-2">4. Docker Objects</h4>
+            <p>The various components that Docker manages, including images, containers, networks, volumes, and plugins.</p>
+            <ul class="list-disc ml-5 mt-2">
+              <li><strong>Images:</strong> Read-only templates used to create containers</li>
+              <li><strong>Containers:</strong> Runnable instances of images</li>
+              <li><strong>Networks:</strong> Communication channels between containers</li>
+              <li><strong>Volumes:</strong> Persistent data storage</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="diagram-container text-white p-6">
+          <h4 class="text-xl font-semibold mb-4 text-center">Docker Architecture Diagram</h4>
+          <div class="flex flex-col items-center">
+            <div class="bg-blue-500 p-3 rounded-lg mb-2 w-64 text-center">Docker Client (CLI)</div>
+            <div class="text-blue-500 mb-2">↓ REST API</div>
+            <div class="bg-green-500 p-3 rounded-lg mb-2 w-64 text-center">Docker Daemon</div>
+            <div class="text-green-500 mb-2">↓ Manages</div>
+            <div class="grid grid-cols-2 gap-2 w-64 mb-2">
+              <div class="bg-purple-500 p-2 rounded text-center text-sm">Containers</div>
+              <div class="bg-purple-500 p-2 rounded text-center text-sm">Images</div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 w-64">
+              <div class="bg-purple-500 p-2 rounded text-center text-sm">Networks</div>
+              <div class="bg-purple-500 p-2 rounded text-center text-sm">Volumes</div>
+            </div>
+            <div class="text-yellow-500 my-2">↕ Registry Communication</div>
+            <div class="bg-yellow-500 p-3 rounded-lg w-64 text-center">Docker Registry</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How Docker Engine Works -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-6 flex items-center">
+          <i class="fas fa-cogs text-devops-purple mr-2"></i> How Does Docker Engine Work in Detail?
+        </h3>
+        
+        <div class="mb-6">
+          <p>Docker Engine is the core of the Docker system, responsible for creating and running containers. It consists of three major components:</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-blue-800 mb-2">Docker Daemon</h4>
+            <p class="text-sm">A persistent background process that manages Docker objects and handles container operations.</p>
+          </div>
+          <div class="bg-green-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-green-800 mb-2">containerd</h4>
+            <p class="text-sm">A core container runtime that handles the lifecycle of containers (start, stop, pause, etc.).</p>
+          </div>
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-purple-800 mb-2">runc</h4>
+            <p class="text-sm">A lightweight CLI tool for spawning and running containers according to the OCI specification.</p>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg mb-6">
+          <h4 class="font-semibold mb-3">Key Technologies Used by Docker Engine:</h4>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <h5 class="font-medium text-blue-700">Namespaces</h5>
+              <p class="text-sm">Provide isolation for running processes (PID, network, mount, etc.)</p>
+            </div>
+            <div>
+              <h5 class="font-medium text-green-700">Control Groups (cgroups)</h5>
+              <p class="text-sm">Limit and account for resource usage (CPU, memory, I/O)</p>
+            </div>
+            <div>
+              <h5 class="font-medium text-purple-700">Union File Systems</h5>
+              <p class="text-sm">Create lightweight images using layers (OverlayFS, AUFS)</p>
+            </div>
+            <div>
+              <h5 class="font-medium text-yellow-700">Container Format</h5>
+              <p class="text-sm">Combines namespaces, cgroups, and rootfs into a container</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Steps of Docker Engine Operation -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-2xl font-semibold mb-6 flex items-center">
+          <i class="fas fa-list-ol text-red-500 mr-2"></i> Steps of Docker Engine Operation
+        </h3>
+        
+        <div class="space-y-6">
+          <div class="flex items-start">
+            <span class="step-number">1</span>
+            <div>
+              <h4 class="font-semibold text-lg">Command Reception</h4>
+              <p>The Docker client sends a command (e.g., <code>docker run</code>) to the Docker daemon via REST API.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <span class="step-number">2</span>
+            <div>
+              <h4 class="font-semibold text-lg">Image Resolution</h4>
+              <p>Docker checks if the required image exists locally. If not, it pulls the image from a registry (like Docker Hub).</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <span class="step-number">3</span>
+            <div>
+              <h4 class="font-semibold text-lg">Container Creation</h4>
+              <p>Docker creates a writeable container layer over the image's read-only layers using a union filesystem.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <span class="step-number">4</span>
+            <div>
+              <h4 class="font-semibold text-lg">Network Setup</h4>
+              <p>Docker creates a network interface and connects the container to the specified network (bridge by default).</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <span class="step-number">5</span>
+            <div>
+              <h4 class="font-semibold text-lg">Resource Allocation</h4>
+              <p>Docker sets up control groups (cgroups) to manage and limit the container's resource usage.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <span class="step-number">6</span>
+            <div>
+              <h4 class="font-semibold text-lg">Process Execution</h4>
+              <p>Docker executes the specified command in the container using namespaces for isolation.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <span class="step-number">7</span>
+            <div>
+              <h4 class="font-semibold text-lg">Management & Monitoring</h4>
+              <p>The Docker daemon continuously monitors the container and manages its lifecycle.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-8 bg-gray-100 p-4 rounded-lg">
+          <h4 class="font-semibold mb-2">Example: <code>docker run nginx</code> Flow</h4>
+          <div class="code-block p-4 rounded font-mono text-sm">
+            <span class="text-green-400">$</span> docker run nginx<br>
+            <span class="text-gray-500"># 1. Client sends command to daemon</span><br>
+            <span class="text-gray-500"># 2. Daemon checks for nginx image locally</span><br>
+            <span class="text-gray-500"># 3. If not found, pulls from Docker Hub</span><br>
+            <span class="text-gray-500"># 4. Creates a new container from the image</span><br>
+            <span class="text-gray-500"># 5. Allocates a filesystem and mounts read-only layer</span><br>
+            <span class="text-gray-500"># 6. Creates network interface and connects to bridge</span><br>
+            <span class="text-gray-500"># 7. Starts the container and runs /docker-entrypoint.sh</span><br>
+            <span class="text-gray-500"># 8. NGINX process starts in the container</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Implementation Section -->
+    <section id="implementation" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Implementation Guide</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-6">Project Structure</h3>
+        <div class="code-block p-4 rounded-lg mb-6 font-mono text-sm">
+          <span class="text-green-400">$</span> tree -a<br>
+          .<br>
+          ├── <span class="text-blue-400">Makefile</span><br>
+          ├── <span class="text-blue-400">.env</span><br>
+          └── <span class="text-blue-400">srcs</span><br>
+          &nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">docker-compose.yml</span><br>
+          &nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">requirements</span><br>
+          &nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">nginx</span><br>
+          &nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">Dockerfile</span><br>
+          &nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">conf</span><br>
+          &nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">wordpress</span><br>
+          &nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">Dockerfile</span><br>
+          &nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">mariadb</span><br>
+          &nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">Dockerfile</span><br>
+          &nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">secrets</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">db_password.txt</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">db_root_password.txt</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bonus Section -->
+    <section id="bonus" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Bonus Features</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover border-t-4 border-green-500">
+          <div class="flex items-center mb-4">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+              <i class="fas fa-bolt text-green-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Redis Cache</h3>
+          </div>
+          <p class="text-gray-600">Implement Redis to cache WordPress data for improved performance.</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover border-t-4 border-blue-500">
+          <div class="flex items-center mb-4">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+              <i class="fas fa-cloud-upload-alt text-blue-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">FTP Server</h3>
+          </div>
+          <p class="text-gray-600">Set up an FTP server for easy file management of WordPress files.</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover border-t-4 border-purple-500">
+          <div class="flex items-center mb-4">
+            <div class="bg-purple-100 p-3 rounded-full mr-4">
+              <i class="fas fa-globe text-purple-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Static Website</h3>
+          </div>
+          <p class="text-gray-600">Create a static website (non-PHP) to showcase your work or resume.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary Section -->
+    <section class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 mt-12">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Key Takeaways for the Inception Project</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold mb-4">Docker Essentials</h3>
+          <ul class="list-disc ml-5 space-y-2">
+            <li>Containers provide process-level isolation, VMs provide OS-level isolation</li>
+            <li>Docker solves environment consistency problems</li>
+            <li>Docker Engine uses a client-server architecture with multiple components</li>
+            <li>Images are built from layers using union filesystems</li>
+            <li>Networks and volumes enable communication and persistence</li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-semibold mb-4">Project Implementation</h3>
+          <ul class="list-disc ml-5 space-y-2">
+            <li>Use Docker Compose for multi-service applications</li>
+            <li>Implement proper Dockerfile best practices</li>
+            <li>Secure your application with TLS and proper configuration</li>
+            <li>Use environment variables and secrets for sensitive data</li>
+            <li>Test your infrastructure thoroughly before submission</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-dark-bg text-white py-12 mt-16">
+    <div class="container mx-auto px-6">
+      <div class="grid md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="text-xl font-bold mb-4">Inception Project</h3>
+          <p class="text-blue-200">A Docker and DevOps learning exercise to master containerization and system administration.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><a href="#overview" class="text-blue-200 hover:text-white transition">Project Overview</a></li>
+            <li><a href="#containers-vms" class="text-blue-200 hover:text-white transition">Containers vs VMs</a></li>
+            <li><a href="#docker-architecture" class="text-blue-200 hover:text-white transition">Docker Architecture</a></li>
+            <li><a href="#bonus" class="text-blue-200 hover:text-white transition">Bonus Features</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold mb-4">Resources</h3>
+          <ul class="space-y-2">
+            <li><a href="https://docs.docker.com/" class="text-blue-200 hover:text-white transition">Docker Documentation</a></li>
+            <li><a href="https://docs.docker.com/compose/" class="text-blue-200 hover:text-white transition">Docker Compose Guide</a></li>
+            <li><a href="https://docs.docker.com/engine/" class="text-blue-200 hover:text-white transition">Docker Engine</a></li>
+            <li><a href="https://www.docker.com/resources/what-container/" class="text-blue-200 hover:text-white transition">What is a Container?</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 mt-8 pt-8 text-center text-blue-200">
+        <p>&copy; 2025 Inception Project - Complete Docker & DevOps Guide. Educational material for system administration learning.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // Update active nav link on scroll
+    window.addEventListener('scroll', function() {
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('.nav-link');
+      
+      let currentSection = '';
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        const sectionHeight = section.clientHeight;
+        
+        if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+      
+      navLinks.forEach(link => {
+        link.classList.remove('active-nav');
+        if (link.getAttribute('href') === `#${currentSection}`) {
+          link.classList.add('active-nav');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
