@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NGINX & Redis Cache - Complete Documentation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'nginx-green': '#009639',
+            'redis-red': '#D82C20',
+            'dark-bg': '#0F172A',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    }
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .nav-link {
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #009639;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    .active-nav::after {
+      width: 100%;
+    }
+    .code-block {
+      background-color: #1E293B;
+      border-left: 4px solid #009639;
+    }
+    .diagram-container {
+      background: linear-gradient(145deg, #1E293B 0%, #334155 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .architecture-layer {
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .architecture-layer:hover {
+      transform: scale(1.02);
+    }
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background-color: #009639;
+      color: white;
+      border-radius: 50%;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .nginx-badge {
+      background-color: #009639;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .redis-badge {
+      background-color: #D82C20;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <!-- Header -->
+  <header class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-server text-3xl text-nginx-green"></i>
+          <div>
+            <h1 class="text-2xl font-bold">NGINX & Redis Cache</h1>
+            <p class="text-sm text-green-200">Complete Documentation & Implementation Guide</p>
+          </div>
+        </div>
+        <nav class="hidden md:flex space-x-8">
+          <a href="#overview" class="nav-link active-nav">Overview</a>
+          <a href="#nginx-details" class="nav-link">NGINX</a>
+          <a href="#redis-details" class="nav-link">Redis</a>
+          <a href="#caching-strategies" class="nav-link">Caching Strategies</a>
+          <a href="#implementation" class="nav-link">Implementation</a>
+          <a href="#performance" class="nav-link">Performance</a>
+        </nav>
+        <button class="md:hidden text-xl">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="gradient-bg text-white py-16">
+    <div class="container mx-auto px-6 text-center">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">Master NGINX & Redis Caching</h2>
+        <p class="text-xl mb-8 text-green-200">A comprehensive guide to web server optimization and high-performance caching</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="#nginx-details" class="bg-nginx-green hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+            <i class="fas fa-server mr-2"></i>NGINX Guide
+          </a>
+          <a href="#redis-details" class="bg-redis-red hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+            <i class="fas fa-database mr-2"></i>Redis Guide
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container mx-auto px-6 py-12 space-y-16">
+    
+    <!-- Overview Section -->
+    <section id="overview" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Overview</h2>
+        <div class="w-20 h-1 bg-nginx-green mx-auto"></div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+          <div class="flex items-center mb-4">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+              <i class="fas fa-rocket text-nginx-green text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Why Caching Matters</h3>
+          </div>
+          <ul class="list-disc ml-5 space-y-2">
+            <li>Reduces server load and response times</li>
+            <li>Improves user experience with faster page loads</li>
+            <li>Handles traffic spikes more effectively</li>
+            <li>Reduces bandwidth costs</li>
+            <li>Enables better scalability</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+          <div class="flex items-center mb-4">
+            <div class="bg-red-100 p-3 rounded-full mr-4">
+              <i class="fas fa-sync-alt text-redis-red text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Caching Layers</h3>
+          </div>
+          <ul class="list-disc ml-5 space-y-2">
+            <li><strong>Browser Cache:</strong> Client-side caching</li>
+            <li><strong>CDN Cache:</strong> Edge server caching</li>
+            <li><strong>Reverse Proxy Cache:</strong> NGINX caching</li>
+            <li><strong>Application Cache:</strong> Redis/Memcached</li>
+            <li><strong>Database Cache:</strong> Query result caching</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- How NGINX and Redis Work Together -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-2xl font-semibold mb-6 flex items-center">
+          <i class="fas fa-handshake text-blue-500 mr-2"></i> How NGINX and Redis Work Together
+        </h3>
+        
+        <div class="mb-6">
+          <p>NGINX and Redis can be combined to create a powerful caching solution that significantly improves web application performance.</p>
+        </div>
+        
+        <div class="diagram-container text-white p-6 mb-6">
+          <h4 class="text-xl font-semibold mb-4 text-center">NGINX + Redis Caching Architecture</h4>
+          <div class="flex flex-col items-center">
+            <div class="bg-blue-500 p-3 rounded-lg mb-2 w-64 text-center">Client Request</div>
+            <div class="text-blue-500 mb-2">↓</div>
+            <div class="bg-nginx-green p-3 rounded-lg mb-2 w-64 text-center">NGINX (Reverse Proxy)</div>
+            <div class="text-nginx-green mb-2">↓ Checks Cache</div>
+            <div class="bg-redis-red p-3 rounded-lg mb-2 w-64 text-center">Redis Cache</div>
+            <div class="grid grid-cols-2 gap-2 w-64 mt-2">
+              <div class="bg-gray-500 p-2 rounded text-center text-sm">Cache Hit<br>Return Cached Data</div>
+              <div class="bg-gray-500 p-2 rounded text-center text-sm">Cache Miss<br>Forward to App</div>
+            </div>
+            <div class="text-gray-400 my-2">↕ Application Processing</div>
+            <div class="bg-purple-500 p-3 rounded-lg w-64 text-center">Application Server</div>
+            <div class="text-purple-500 mt-2">↓ Store in Cache</div>
+            <div class="bg-redis-red p-3 rounded-lg w-64 text-center">Redis Cache</div>
+          </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Benefits of This Architecture</h4>
+            <ul class="list-disc ml-5 space-y-2">
+              <li>NGINX serves static content efficiently</li>
+              <li>Redis stores dynamic content with low latency</li>
+              <li>Reduces load on application servers</li>
+              <li>Provides fallback mechanisms during outages</li>
+              <li>Enables horizontal scaling</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Use Cases</h4>
+            <ul class="list-disc ml-5 space-y-2">
+              <li>High-traffic websites and applications</li>
+              <li>E-commerce platforms with product catalogs</li>
+              <li>Content management systems</li>
+              <li>API gateways and microservices</li>
+              <li>Real-time applications with session storage</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NGINX Details Section -->
+    <section id="nginx-details" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">NGINX Deep Dive</h2>
+        <div class="w-20 h-1 bg-nginx-green mx-auto"></div>
+      </div>
+
+      <!-- What is NGINX -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-4 flex items-center">
+          <i class="fas fa-info-circle text-nginx-green mr-2"></i> What is NGINX?
+        </h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="mb-4">NGINX is a high-performance web server, reverse proxy, load balancer, and HTTP cache. It's known for its stability, rich feature set, simple configuration, and low resource consumption.</p>
+            <div class="bg-green-50 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold text-green-800 mb-2">Key Features:</h4>
+              <ul class="list-disc ml-5 space-y-1">
+                <li><strong>High Performance:</strong> Event-driven, asynchronous architecture</li>
+                <li><strong>Reverse Proxy:</strong> With load balancing capabilities</li>
+                <li><strong>Caching:</strong> Built-in HTTP cache</li>
+                <li><strong>SSL/TLS Termination:</strong> Offloads encryption from backend servers</li>
+                <li><strong>WebSockets:</strong> Full support for real-time communication</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex items-center justify-center">
+            <div class="bg-gray-100 p-4 rounded-lg w-full">
+              <div class="text-center font-semibold mb-2">NGINX Architecture</div>
+              <div class="bg-white border rounded p-3 mb-2 text-center">Master Process</div>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="bg-blue-200 p-2 rounded text-center text-sm">Worker</div>
+                <div class="bg-blue-200 p-2 rounded text-center text-sm">Worker</div>
+                <div class="bg-blue-200 p-2 rounded text-center text-sm">Worker</div>
+              </div>
+              <div class="bg-gray-300 text-center py-1 mt-2">Event-Driven Model</div>
+              <div class="bg-gray-500 text-white text-center py-1">OS Kernel</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NGINX Caching -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-4 flex items-center">
+          <i class="fas fa-bolt text-yellow-500 mr-2"></i> NGINX Caching Mechanism
+        </h3>
+        
+        <div class="mb-6">
+          <p>NGINX can cache responses from proxied servers, reducing load on backend systems and improving response times for clients.</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Basic Caching Configuration</h4>
+            <div class="code-block p-4 rounded font-mono text-sm">
+              <span class="text-gray-400"># Define cache path and parameters</span><br>
+              <span class="text-blue-400">proxy_cache_path</span> /var/cache/nginx levels=1:2<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keys_zone=my_cache:10m<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_size=10g inactive=60m;<br><br>
+              
+              <span class="text-gray-400"># Server block configuration</span><br>
+              <span class="text-blue-400">server</span> {<br>
+              &nbsp;&nbsp;<span class="text-blue-400">location</span> / {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">proxy_cache</span> my_cache;<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">proxy_pass</span> http://backend;<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">proxy_cache_valid</span> 200 302 10m;<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">proxy_cache_valid</span> 404 1m;<br>
+              &nbsp;&nbsp;}<br>
+              }
+            </div>
+          </div>
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Cache Control Directives</h4>
+            <ul class="list-disc ml-5 space-y-2">
+              <li><code>proxy_cache_path</code>: Defines cache location and parameters</li>
+              <li><code>proxy_cache</code>: Enables caching for a location</li>
+              <li><code>proxy_cache_valid</code>: Sets cache duration for response codes</li>
+              <li><code>proxy_cache_key</code>: Defines how to build cache keys</li>
+              <li><code>proxy_cache_bypass</code>: Conditions to bypass cache</li>
+              <li><code>proxy_no_cache</code>: Conditions to prevent caching</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="bg-yellow-50 p-4 rounded-lg">
+          <h4 class="font-semibold text-yellow-800 mb-2">Cache Key Importance</h4>
+          <p>The cache key determines how NGINX identifies unique responses. A well-designed cache key is essential for effective caching.</p>
+          <div class="code-block p-4 rounded font-mono text-sm mt-2">
+            <span class="text-blue-400">proxy_cache_key</span> "$scheme$request_method$host$request_uri$is_args$args";
+          </div>
+        </div>
+      </div>
+
+      <!-- NGINX as Reverse Proxy -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-2xl font-semibold mb-6 flex items-center">
+          <i class="fas fa-exchange-alt text-purple-500 mr-2"></i> NGINX as Reverse Proxy & Load Balancer
+        </h3>
+        
+        <div class="mb-6">
+          <p>NGINX excels as a reverse proxy, distributing client requests across multiple backend servers and providing load balancing capabilities.</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Load Balancing Methods</h4>
+            <ul class="list-disc ml-5 space-y-2">
+              <li><strong>Round Robin:</strong> Distributes requests evenly (default)</li>
+              <li><strong>Least Connections:</strong> Sends to server with fewest active connections</li>
+              <li><strong>IP Hash:</strong> Client IP determines server selection</li>
+              <li><strong>Generic Hash:</strong> User-defined key for server selection</li>
+              <li><strong>Weighted:</strong> Assigns different weights to servers</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Load Balancing Configuration</h4>
+            <div class="code-block p-4 rounded font-mono text-sm">
+              <span class="text-blue-400">upstream</span> backend_servers {<br>
+              &nbsp;&nbsp;<span class="text-gray-400"># Least connections load balancing</span><br>
+              &nbsp;&nbsp;<span class="text-blue-400">least_conn</span>;<br>
+              &nbsp;&nbsp;<span class="text-blue-400">server</span> 192.168.1.10:8000 weight=3;<br>
+              &nbsp;&nbsp;<span class="text-blue-400">server</span> 192.168.1.11:8000;<br>
+              &nbsp;&nbsp;<span class="text-blue-400">server</span> 192.168.1.12:8000 backup;<br>
+              }<br><br>
+              
+              <span class="text-blue-400">server</span> {<br>
+              &nbsp;&nbsp;<span class="text-blue-400">location</span> / {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">proxy_pass</span> http://backend_servers;<br>
+              &nbsp;&nbsp;}<br>
+              }
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-purple-50 p-4 rounded-lg">
+          <h4 class="font-semibold text-purple-800 mb-2">Health Checks</h4>
+          <p>NGINX can monitor backend servers and automatically stop sending traffic to unhealthy servers.</p>
+          <div class="code-block p-4 rounded font-mono text-sm mt-2">
+            <span class="text-blue-400">server</span> 192.168.1.10:8000 max_fails=3 fail_timeout=30s;
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Redis Details Section -->
+    <section id="redis-details" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Redis Deep Dive</h2>
+        <div class="w-20 h-1 bg-redis-red mx-auto"></div>
+      </div>
+
+      <!-- What is Redis -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-4 flex items-center">
+          <i class="fas fa-database text-redis-red mr-2"></i> What is Redis?
+        </h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="mb-4">Redis (Remote Dictionary Server) is an open-source, in-memory data structure store used as a database, cache, and message broker. It supports various data structures and offers exceptional performance.</p>
+            <div class="bg-red-50 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold text-red-800 mb-2">Key Features:</h4>
+              <ul class="list-disc ml-5 space-y-1">
+                <li><strong>In-Memory Storage:</strong> Data accessed directly from RAM</li>
+                <li><strong>Data Structures:</strong> Strings, hashes, lists, sets, sorted sets</li>
+                <li><strong>Persistence:</strong> Optional disk persistence</li>
+                <li><strong>Replication:</strong> Master-slave asynchronous replication</li>
+                <li><strong>High Availability:</strong> Redis Sentinel for automatic failover</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex items-center justify-center">
+            <div class="bg-gray-100 p-4 rounded-lg w-full">
+              <div class="text-center font-semibold mb-2">Redis Architecture</div>
+              <div class="bg-white border rounded p-3 mb-2 text-center">Redis Client</div>
+              <div class="text-red-500 mb-2">↓ TCP/IP or Unix Socket</div>
+              <div class="bg-red-200 p-3 rounded text-center">Redis Server</div>
+              <div class="grid grid-cols-2 gap-2 mt-2">
+                <div class="bg-yellow-200 p-2 rounded text-center text-sm">In-Memory Data Store</div>
+                <div class="bg-blue-200 p-2 rounded text-center text-sm">Persistence (RDB/AOF)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Redis Data Structures -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-6 flex items-center">
+          <i class="fas fa-layer-group text-orange-500 mr-2"></i> Redis Data Structures
+        </h3>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div class="bg-orange-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-orange-800 mb-2">Strings</h4>
+            <p class="text-sm">Basic key-value storage. Maximum size: 512MB.</p>
+            <div class="code-block p-2 rounded font-mono text-xs mt-2">
+              SET user:1000 "John Doe"<br>
+              GET user:1000
+            </div>
+          </div>
+          
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-blue-800 mb-2">Hashes</h4>
+            <p class="text-sm">Maps between string fields and values. Ideal for objects.</p>
+            <div class="code-block p-2 rounded font-mono text-xs mt-2">
+              HSET user:1000 name "John" age 30<br>
+              HGET user:1000 name
+            </div>
+          </div>
+          
+          <div class="bg-green-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-green-800 mb-2">Lists</h4>
+            <p class="text-sm">Collections of string elements. Maintains insertion order.</p>
+            <div class="code-block p-2 rounded font-mono text-xs mt-2">
+              LPUSH tasks "task1"<br>
+              RPOP tasks
+            </div>
+          </div>
+          
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-purple-800 mb-2">Sets</h4>
+            <p class="text-sm">Unordered collections of unique strings.</p>
+            <div class="code-block p-2 rounded font-mono text-xs mt-2">
+              SADD tags "redis" "database"<br>
+              SMEMBERS tags
+            </div>
+          </div>
+          
+          <div class="bg-pink-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-pink-800 mb-2">Sorted Sets</h4>
+            <p class="text-sm">Sets with a score for ordering. Ideal for rankings.</p>
+            <div class="code-block p-2 rounded font-mono text-xs mt-2">
+              ZADD leaderboard 100 "player1"<br>
+              ZRANGE leaderboard 0 -1
+            </div>
+          </div>
+          
+          <div class="bg-indigo-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-indigo-800 mb-2">Streams</h4>
+            <p class="text-sm">Append-only logs. Perfect for messaging and event sourcing.</p>
+            <div class="code-block p-2 rounded font-mono text-xs mt-2">
+              XADD mystream * sensor-id 1234 temp 19.8<br>
+              XREAD COUNT 2 STREAMS mystream 0
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Redis Persistence -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-2xl font-semibold mb-6 flex items-center">
+          <i class="fas fa-save text-green-500 mr-2"></i> Redis Persistence Options
+        </h3>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">RDB (Redis Database)</h4>
+            <p>Point-in-time snapshots of the dataset at specified intervals.</p>
+            <div class="bg-green-50 p-3 rounded-lg mt-2">
+              <h5 class="font-medium text-green-800">Advantages:</h5>
+              <ul class="list-disc ml-5 text-sm">
+                <li>Compact single file for backups</li>
+                <li>Faster restart with large datasets</li>
+                <li>Minimal performance impact</li>
+              </ul>
+            </div>
+            <div class="code-block p-3 rounded font-mono text-sm mt-2">
+              <span class="text-gray-400"># Save the dataset every 60 seconds if at least 1000 keys changed</span><br>
+              save 60 1000
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-lg mb-3">AOF (Append Only File)</h4>
+            <p>Logs every write operation received by the server.</p>
+            <div class="bg-blue-50 p-3 rounded-lg mt-2">
+              <h5 class="font-medium text-blue-800">Advantages:</h5>
+              <ul class="list-disc ml-5 text-sm">
+                <li>Better durability (various fsync policies)</li>
+                <li>Human-readable log format</li>
+                <li>Auto-rewrite to compact the log</li>
+              </ul>
+            </div>
+            <div class="code-block p-3 rounded font-mono text-sm mt-2">
+              <span class="text-gray-400"># Enable AOF persistence</span><br>
+              appendonly yes<br>
+              appendfsync everysec
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-yellow-50 p-4 rounded-lg">
+          <h4 class="font-semibold text-yellow-800 mb-2">Recommendation</h4>
+          <p>For most use cases, it's recommended to use both RDB and AOF persistence for the best combination of performance and data safety.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Caching Strategies Section -->
+    <section id="caching-strategies" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Caching Strategies</h2>
+        <div class="w-20 h-1 bg-nginx-green mx-auto"></div>
+      </div>
+
+      <!-- Cache Invalidation Strategies -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-6 flex items-center">
+          <i class="fas fa-sync-alt text-blue-500 mr-2"></i> Cache Invalidation Strategies
+        </h3>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Time-Based Expiration (TTL)</h4>
+            <p>Cache items automatically expire after a fixed time period.</p>
+            <div class="bg-blue-50 p-3 rounded-lg mt-2">
+              <h5 class="font-medium text-blue-800">Implementation:</h5>
+              <div class="code-block p-2 rounded font-mono text-xs">
+                <span class="text-gray-400"># Redis: Set key with 60-second TTL</span><br>
+                SET key value EX 60<br><br>
+                <span class="text-gray-400"># NGINX: Cache valid for 10 minutes</span><br>
+                proxy_cache_valid 200 10m;
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Explicit Invalidation</h4>
+            <p>Manually remove cache entries when data changes.</p>
+            <div class="bg-green-50 p-3 rounded-lg mt-2">
+              <h5 class="font-medium text-green-800">Implementation:</h5>
+              <div class="code-block p-2 rounded font-mono text-xs">
+                <span class="text-gray-400"># Application logic after data update</span><br>
+                redis.del('user:1000:profile');<br>
+                redis.del('product:500:details');<br><br>
+                <span class="text-gray-400"># NGINX: Bypass cache for specific requests</span><br>
+                proxy_cache_bypass $http_purge_cache;
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Write-Through Cache</h4>
+            <p>Data is written to both cache and database simultaneously.</p>
+            <div class="bg-purple-50 p-3 rounded-lg mt-2">
+              <h5 class="font-medium text-purple-800">Advantages:</h5>
+              <ul class="list-disc ml-5 text-sm">
+                <li>Cache always consistent with database</li>
+                <li>Reads are always fast</li>
+                <li>Good for read-heavy workloads</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Write-Behind Cache</h4>
+            <p>Data is written to cache first, then asynchronously to database.</p>
+            <div class="bg-orange-50 p-3 rounded-lg mt-2">
+              <h5 class="font-medium text-orange-800">Advantages:</h5>
+              <ul class="list-disc ml-5 text-sm">
+                <li>Very fast write performance</li>
+                <li>Reduces database load</li>
+                <li>Good for write-heavy workloads</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+            <!-- Redis Persistence -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="text-2xl font-semibold mb-6 flex items-center">
+                  <i class="fas fa-save text-green-600 mr-2"></i> Redis Persistence
+                </h3>
+                <p class="mb-4">Redis provides different persistence mechanisms to ensure data durability even if the server restarts.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="bg-green-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-2">RDB (Snapshotting)</h4>
+                    <p class="text-sm">Saves the dataset to disk at specified intervals. Lightweight but may lose recent data.</p>
+                    <div class="code-block p-2 rounded font-mono text-xs mt-2">
+                      save 900 1  # Save if 1 change in 900s<br>
+                      save 300 10 # Save if 10 changes in 300s
+                    </div>
+                  </div>
+                  <div class="bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-blue-800 mb-2">AOF (Append-Only File)</h4>
+                    <p class="text-sm">Logs every write operation. More durable but requires more disk I/O.</p>
+                    <div class="code-block p-2 rounded font-mono text-xs mt-2">
+                      appendonly yes<br>
+                      appendfsync everysec
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+              <!-- Redis Replication & High Availability -->
+              <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="text-2xl font-semibold mb-6 flex items-center">
+                  <i class="fas fa-network-wired text-purple-600 mr-2"></i> Replication & High Availability
+                </h3>
+                <p class="mb-4">Redis supports replication for redundancy and fault tolerance. Combined with Redis Sentinel, it provides automatic failover.</p>
+                
+                <ul class="list-disc ml-6 space-y-2">
+                  <li><strong>Master-Slave Replication:</strong> Slaves copy data from master.</li>
+                  <li><strong>Read Scaling:</strong> Reads can be distributed to slaves.</li>
+                  <li><strong>Sentinel:</strong> Monitors masters and promotes a slave if needed.</li>
+                  <li><strong>Automatic Failover:</strong> Keeps system running during node failures.</li>
+                </ul>
+              </div>
+        
+              <!-- Redis Cluster -->
+              <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="text-2xl font-semibold mb-6 flex items-center">
+                  <i class="fas fa-project-diagram text-yellow-600 mr-2"></i> Redis Cluster
+                </h3>
+                <p class="mb-4">Redis Cluster provides sharding and high availability by splitting data across multiple nodes.</p>
+                
+                <div class="diagram-container text-white text-center">
+                  <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-redis-red p-3 rounded">Node 1<br><span class="text-xs">Slots 0–5460</span></div>
+                    <div class="bg-redis-red p-3 rounded">Node 2<br><span class="text-xs">Slots 5461–10922</span></div>
+                    <div class="bg-redis-red p-3 rounded">Node 3<br><span class="text-xs">Slots 10923–16383</span></div>
+                  </div>
+                  <p class="mt-4 text-sm text-gray-200">Each node handles part of the keyspace, enabling horizontal scaling.</p>
+                </div>
+              </div>
+        
+              <!-- Redis Use Cases -->
+              <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-2xl font-semibold mb-6 flex items-center">
+                  <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Common Use Cases
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                  <ul class="list-disc ml-6 space-y-2">
+                    <li>Session storage for web applications</li>
+                    <li>Leaderboards and ranking systems</li>
+                    <li>Message queues using Redis Lists or Streams</li>
+                  </ul>
+                  <ul class="list-disc ml-6 space-y-2">
+                    <li>Caching API responses and queries</li>
+                    <li>Real-time analytics</li>
+                    <li>Pub/Sub messaging for notifications</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+        
+            <!-- Caching Strategies Section -->
+            <section id="caching-strategies" class="scroll-mt-20">
+              <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Caching Strategies</h2>
+                <div class="w-20 h-1 bg-blue-500 mx-auto"></div>
+              </div>
+        
+              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                  <h4 class="font-semibold text-lg mb-3">Cache Aside</h4>
+                  <p class="text-sm">Application checks cache before DB. If cache miss → fetch from DB → update cache.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                  <h4 class="font-semibold text-lg mb-3">Write-Through</h4>
+                  <p class="text-sm">Every write goes through cache → ensures consistency but adds write latency.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                  <h4 class="font-semibold text-lg mb-3">Write-Behind</h4>
+                  <p class="text-sm">Writes go to cache first, DB updated asynchronously → faster writes but risk of data loss.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                  <h4 class="font-semibold text-lg mb-3">Read-Through</h4>
+                  <p class="text-sm">Application only queries cache, which fetches from DB if data missing.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                  <h4 class="font-semibold text-lg mb-3">TTL Expiration</h4>
+                  <p class="text-sm">Cached data expires after a defined period → ensures freshness of data.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                  <h4 class="font-semibold text-lg mb-3">Lazy Eviction</h4>
+                  <p class="text-sm">Data removed from cache only when needed → reduces cache churn.</p>
+                </div>
+              </div>
+            </section>
+        
+            <!-- Implementation Section -->
+            <section id="implementation" class="scroll-mt-20">
+              <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Implementation Examples</h2>
+                <div class="w-20 h-1 bg-green-500 mx-auto"></div>
+              </div>
+        
+              <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                  <h3 class="font-semibold text-lg mb-4"><span class="nginx-badge">NGINX</span> Config Example</h3>
+                  <div class="code-block p-4 rounded font-mono text-xs">
+                    proxy_cache_path /var/cache/nginx keys_zone=my_cache:10m;<br>
+                    server {<br>
+                    &nbsp;&nbsp;location /api {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;proxy_cache my_cache;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;proxy_pass http://backend;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;proxy_cache_valid 200 1m;<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                  </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                  <h3 class="font-semibold text-lg mb-4"><span class="redis-badge">Redis</span> Example in Node.js</h3>
+                  <div class="code-block p-4 rounded font-mono text-xs">
+                    const redis = require("redis");<br>
+                    const client = redis.createClient();<br><br>
+                    app.get("/data", async (req, res) => {<br>
+                    &nbsp;&nbsp;const cached = await client.get("mydata");<br>
+                    &nbsp;&nbsp;if (cached) return res.json(JSON.parse(cached));<br><br>
+                    &nbsp;&nbsp;const fresh = await db.query("SELECT * FROM items");<br>
+                    &nbsp;&nbsp;await client.setEx("mydata", 60, JSON.stringify(fresh));<br>
+                    &nbsp;&nbsp;res.json(fresh);<br>
+                    });
+                  </div>
+                </div>
+              </div>
+            </section>
+        
+            <!-- Performance Section -->
+            <section id="performance" class="scroll-mt-20">
+              <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Performance & Monitoring</h2>
+                <div class="w-20 h-1 bg-purple-500 mx-auto"></div>
+              </div>
+        
+              <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                  <h3 class="font-semibold text-lg mb-3">Monitoring Tools</h3>
+                  <ul class="list-disc ml-5 space-y-2">
+                    <li><strong>NGINX Status Module:</strong> Monitor active connections</li>
+                    <li><strong>Redis INFO:</strong> Real-time server stats</li>
+                    <li><strong>Prometheus + Grafana:</strong> Dashboards for both</li>
+                    <li><strong>New Relic / Datadog:</strong> End-to-end monitoring</li>
+                  </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                  <h3 class="font-semibold text-lg mb-3">Optimization Tips</h3>
+                  <ul class="list-disc ml-5 space-y-2">
+                    <li>Use proper cache keys and TTL values</li>
+                    <li>Evict unused keys with <code>volatile-lru</code> policy</li>
+                    <li>Enable Gzip/Brotli compression in NGINX</li>
+                    <li>Monitor cache hit/miss ratio regularly</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </main>
+        
+          <!-- Footer -->
+          <footer class="gradient-bg text-white py-8 mt-12">
+            <div class="container mx-auto px-6 text-center">
+              <p class="text-sm">&copy; 2025 NGINX & Redis Documentation | Built with ❤️ by DevOps Enthusiasts</p>
+              <div class="flex justify-center mt-4 space-x-4">
+                <a href="#" class="hover:text-green-400"><i class="fab fa-github"></i></a>
+                <a href="#" class="hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="hover:text-red-400"><i class="fab fa-youtube"></i></a>
+              </div>
+            </div>
+          </footer>
+        </body>
+        </html>
+        
