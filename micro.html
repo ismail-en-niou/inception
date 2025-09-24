@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inception Project - Microservices Architecture & Implementation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'docker-blue': '#2496ED',
+            'devops-purple': '#7E69AB',
+            'dark-bg': '#0F172A',
+            'microservice-green': '#10B981',
+            'database-orange': '#F59E0B'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    }
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .nav-link {
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #2496ED;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    .active-nav::after {
+      width: 100%;
+    }
+    .code-block {
+      background-color: #1E293B;
+      border-left: 4px solid #2496ED;
+    }
+    .diagram-container {
+      background: linear-gradient(145deg, #1E293B 0%, #334155 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .architecture-layer {
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .architecture-layer:hover {
+      transform: scale(1.02);
+    }
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background-color: #2496ED;
+      color: white;
+      border-radius: 50%;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .service-card {
+      border-left: 4px solid;
+    }
+    .mariadb-card { border-left-color: #F59E0B; }
+    .wordpress-card { border-left-color: #21759B; }
+    .nginx-card { border-left-color: #269F63; }
+    .redis-card { border-left-color: #DC382D; }
+    .ftp-card { border-left-color: #FF6D00; }
+    .adminer-card { border-left-color: #445F78; }
+    .portfolio-card { border-left-color: #6B7280; }
+    .portainer-card { border-left-color: #13B9FD; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <!-- Header -->
+  <header class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <i class="fab fa-docker text-3xl text-docker-blue"></i>
+          <div>
+            <h1 class="text-2xl font-bold">Inception Project</h1>
+            <p class="text-sm text-blue-200">Microservices Architecture & Implementation</p>
+          </div>
+        </div>
+        <nav class="hidden md:flex space-x-8">
+          <a href="#overview" class="nav-link active-nav">Overview</a>
+          <a href="#architecture" class="nav-link">Architecture</a>
+          <a href="#services" class="nav-link">Services</a>
+          <a href="#networking" class="nav-link">Networking</a>
+          <a href="#deployment" class="nav-link">Deployment</a>
+        </nav>
+        <button class="md:hidden text-xl">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="gradient-bg text-white py-16">
+    <div class="container mx-auto px-6 text-center">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">Microservices Architecture with Docker Compose</h2>
+        <p class="text-xl mb-8 text-blue-200">A comprehensive implementation of microservices using Docker containers for the Inception project</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="#architecture" class="bg-docker-blue hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+            <i class="fas fa-project-diagram mr-2"></i>View Architecture
+          </a>
+          <a href="#services" class="bg-microservice-green hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+            <i class="fas fa-server mr-2"></i>Explore Services
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container mx-auto px-6 py-12 space-y-16">
+    
+    <!-- Overview Section -->
+    <section id="overview" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Microservices Overview</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+          <div class="flex items-center mb-4">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+              <i class="fas fa-cubes text-docker-blue text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">What are Microservices?</h3>
+          </div>
+          <p class="mb-4">Microservices architecture is an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms.</p>
+          <ul class="list-disc ml-5 space-y-2">
+            <li>Each service implements a specific business capability</li>
+            <li>Services can be developed, deployed, and scaled independently</li>
+            <li>Improved fault isolation and resilience</li>
+            <li>Technology diversity - each service can use different technologies</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+          <div class="flex items-center mb-4">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+              <i class="fas fa-layer-group text-microservice-green text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Benefits in this Project</h3>
+          </div>
+          <p class="mb-4">The Inception project implements microservices using Docker containers to demonstrate modern application architecture principles.</p>
+          <ul class="list-disc ml-5 space-y-2">
+            <li>Isolation of concerns (database, application, web server)</li>
+            <li>Independent scaling of services based on demand</li>
+            <li>Faster development cycles for individual components</li>
+            <li>Easier maintenance and updates</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-2xl font-semibold mb-4">Project Structure</h3>
+        <div class="code-block p-4 rounded-lg mb-6 font-mono text-sm">
+          <span class="text-green-400">$</span> tree -a<br>
+          .<br>
+          ├── <span class="text-blue-400">docker-compose.yml</span><br>
+          ├── <span class="text-blue-400">mariadb/</span><br>
+          │&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">Dockerfile</span><br>
+          ├── <span class="text-blue-400">wordpress/</span><br>
+          │&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">Dockerfile</span><br>
+          ├── <span class="text-blue-400">nginx/</span><br>
+          │&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">Dockerfile</span><br>
+          ├── <span class="text-blue-400">bonus/</span><br>
+          │&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">redis/</span><br>
+          │&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">ftp/</span><br>
+          │&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">adminer/</span><br>
+          │&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">static/</span><br>
+          │&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">portainer/</span><br>
+          └── <span class="text-blue-400">secrets/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">db_password.txt</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="text-blue-400">db_root_password.txt</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="text-blue-400">wp_admin_password.txt</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">System Architecture</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-6">Architecture Overview</h3>
+        
+        <div class="diagram-container text-white p-6 mb-6">
+          <h4 class="text-xl font-semibold mb-4 text-center">Microservices Architecture Diagram</h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Layer 1: Client -->
+            <div class="bg-blue-600 p-4 rounded text-center">Client Browser</div>
+            
+            <!-- Layer 2: Reverse Proxy -->
+            <div class="md:col-span-3 bg-green-600 p-4 rounded text-center my-4">NGINX (Reverse Proxy)</div>
+            
+            <!-- Layer 3: Application Services -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-3">
+              <div class="bg-purple-600 p-4 rounded text-center">WordPress</div>
+              <div class="bg-gray-600 p-4 rounded text-center">Static Portfolio</div>
+              <div class="bg-indigo-600 p-4 rounded text-center">Adminer</div>
+            </div>
+            
+            <!-- Layer 4: Data & Management -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:col-span-3 mt-4">
+              <div class="bg-orange-600 p-4 rounded text-center">MariaDB</div>
+              <div class="bg-red-600 p-4 rounded text-center">Redis</div>
+              <div class="bg-yellow-600 p-4 rounded text-center">FTP Server</div>
+              <div class="bg-teal-600 p-4 rounded text-center">Portainer</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Communication Flow</h4>
+            <ol class="list-decimal ml-5 space-y-2">
+              <li>Client requests reach NGINX on port 443 (HTTPS)</li>
+              <li>NGINX routes requests based on URL patterns</li>
+              <li>WordPress handles dynamic content requests</li>
+              <li>Static portfolio serves static website content</li>
+              <li>MariaDB provides data persistence for WordPress</li>
+              <li>Redis caches frequently accessed data</li>
+              <li>Adminer provides database management interface</li>
+              <li>FTP server allows file management</li>
+              <li>Portainer provides container management UI</li>
+            </ol>
+          </div>
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Network Architecture</h4>
+            <ul class="list-disc ml-5 space-y-2">
+              <li>All services connected via custom <code>inception</code> network</li>
+              <li>Bridge network driver provides internal DNS resolution</li>
+              <li>External ports exposed only for necessary services</li>
+              <li>Internal communication uses service names as hostnames</li>
+              <li>Secure communication with TLS encryption</li>
+            </ul>
+            
+            <h4 class="font-semibold text-lg mt-6 mb-3">Data Flow</h4>
+            <ul class="list-disc ml-5 space-y-2">
+              <li>Persistent volumes for database, WordPress, and Redis data</li>
+              <li>Secrets management for sensitive configuration</li>
+              <li>Environment variables for service configuration</li>
+              <li>Dependency management with <code>depends_on</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Microservices Details</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- MariaDB Service -->
+        <div class="bg-white rounded-xl shadow-lg p-6 service-card mariadb-card">
+          <div class="flex items-center mb-4">
+            <div class="bg-orange-100 p-3 rounded-full mr-4">
+              <i class="fas fa-database text-orange-500 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">MariaDB</h3>
+          </div>
+          <p class="text-gray-600 mb-4">Relational database service storing WordPress data.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="font-medium">Container Name:</span>
+              <code class="bg-gray-100 px-2 rounded">mariadb</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Image:</span>
+              <code class="bg-gray-100 px-2 rounded">ismailenniou/mariadb:v1.0</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Port:</span>
+              <code class="bg-gray-100 px-2 rounded">3306:3306</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Volume:</span>
+              <code class="bg-gray-100 px-2 rounded text-xs">/home/ien-niou/data/mariadb_data</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- WordPress Service -->
+        <div class="bg-white rounded-xl shadow-lg p-6 service-card wordpress-card">
+          <div class="flex items-center mb-4">
+            <div class="bg-blue-100 p-3 rounded-full mr-4">
+              <i class="fab fa-wordpress text-blue-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">WordPress</h3>
+          </div>
+          <p class="text-gray-600 mb-4">Content management system for dynamic website content.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="font-medium">Container Name:</span>
+              <code class="bg-gray-100 px-2 rounded">wordpress</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Image:</span>
+              <code class="bg-gray-100 px-2 rounded">ismailenniou/wordpress:v1.0</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Port:</span>
+              <code class="bg-gray-100 px-2 rounded">9000:9000</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Depends On:</span>
+              <code class="bg-gray-100 px-2 rounded">mariadb</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- NGINX Service -->
+        <div class="bg-white rounded-xl shadow-lg p-6 service-card nginx-card">
+          <div class="flex items-center mb-4">
+            <div class="bg-green-100 p-3 rounded-full mr-4">
+              <i class="fas fa-server text-green-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">NGINX</h3>
+          </div>
+          <p class="text-gray-600 mb-4">Web server and reverse proxy handling HTTPS requests.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="font-medium">Container Name:</span>
+              <code class="bg-gray-100 px-2 rounded">nginx</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Image:</span>
+              <code class="bg-gray-100 px-2 rounded">ismailenniou/nginx:v1.0</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Port:</span>
+              <code class="bg-gray-100 px-2 rounded">443:443</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Depends On:</span>
+              <code class="bg-gray-100 px-2 rounded">wordpress</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Redis Service -->
+        <div class="bg-white rounded-xl shadow-lg p-6 service-card redis-card">
+          <div class="flex items-center mb-4">
+            <div class="bg-red-100 p-3 rounded-full mr-4">
+              <i class="fas fa-bolt text-red-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Redis</h3>
+          </div>
+          <p class="text-gray-600 mb-4">In-memory data structure store used as a cache.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="font-medium">Container Name:</span>
+              <code class="bg-gray-100 px-2 rounded">redis</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Image:</span>
+              <code class="bg-gray-100 px-2 rounded">ismailenniou/redis:v1.0</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Port:</span>
+              <code class="bg-gray-100 px-2 rounded">6379:6379</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Volume:</span>
+              <code class="bg-gray-100 px-2 rounded text-xs">/home/ien-niou/data/redis_data</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- FTP Service -->
+        <div class="bg-white rounded-xl shadow-lg p-6 service-card ftp-card">
+          <div class="flex items-center mb-4">
+            <div class="bg-orange-100 p-3 rounded-full mr-4">
+              <i class="fas fa-file-upload text-orange-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">FTP Server</h3>
+          </div>
+          <p class="text-gray-600 mb-4">File Transfer Protocol server for WordPress file management.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="font-medium">Container Name:</span>
+              <code class="bg-gray-100 px-2 rounded">ftp</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Image:</span>
+              <code class="bg-gray-100 px-2 rounded">ismailenniou/ftp:v1.0</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Ports:</span>
+              <code class="bg-gray-100 px-2 rounded">21, 21000-21010</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Volume:</span>
+              <code class="bg-gray-100 px-2 rounded text-xs">/home/ien-niou/data/wordpress_data</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Adminer Service -->
+        <div class="bg-white rounded-xl shadow-lg p-6 service-card adminer-card">
+          <div class="flex items-center mb-4">
+            <div class="bg-indigo-100 p-3 rounded-full mr-4">
+              <i class="fas fa-tools text-indigo-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Adminer</h3>
+          </div>
+          <p class="text-gray-600 mb-4">Database management tool for MariaDB administration.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="font-medium">Container Name:</span>
+              <code class="bg-gray-100 px-2 rounded">adminer</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Image:</span>
+              <code class="bg-gray-100 px-2 rounded">ismailenniou/adminer:v1.0</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Port:</span>
+              <code class="bg-gray-100 px-2 rounded">8080:8088</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Depends On:</span>
+              <code class="bg-gray-100 px-2 rounded">mariadb</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Portfolio Service -->
+        <div class="bg-white rounded-xl shadow-lg p-6 service-card portfolio-card">
+          <div class="flex items-center mb-4">
+            <div class="bg-gray-100 p-3 rounded-full mr-4">
+              <i class="fas fa-globe text-gray-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Static Portfolio</h3>
+          </div>
+          <p class="text-gray-600 mb-4">Static website showcasing your work or resume.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="font-medium">Container Name:</span>
+              <code class="bg-gray-100 px-2 rounded">portfolio</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Image:</span>
+              <code class="bg-gray-100 px-2 rounded">ismailenniou/portfolio:v1.0</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Port:</span>
+              <code class="bg-gray-100 px-2 rounded">8085:80</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Portainer Service -->
+        <div class="bg-white rounded-xl shadow-lg p-6 service-card portainer-card">
+          <div class="flex items-center mb-4">
+            <div class="bg-teal-100 p-3 rounded-full mr-4">
+              <i class="fas fa-ship text-teal-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">Portainer</h3>
+          </div>
+          <p class="text-gray-600 mb-4">Container management UI for Docker environment.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="font-medium">Container Name:</span>
+              <code class="bg-gray-100 px-2 rounded">portainer</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Image:</span>
+              <code class="bg-gray-100 px-2 rounded">portainer:1337.42</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Port:</span>
+              <code class="bg-gray-100 px-2 rounded">9443:9443</code>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-medium">Volume:</span>
+              <code class="bg-gray-100 px-2 rounded text-xs">/var/run/docker.sock</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Networking Section -->
+    <section id="networking" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Networking & Communication</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-6">Docker Network Configuration</h3>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Custom Bridge Network</h4>
+            <p>The project uses a custom bridge network named <code>inception</code> to facilitate communication between containers.</p>
+            <div class="bg-blue-50 p-4 rounded-lg mt-4">
+              <h5 class="font-medium text-blue-800 mb-2">Network Configuration:</h5>
+              <pre class="text-sm"><code>networks:
+  inception:
+    driver: bridge</code></pre>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Service Discovery</h4>
+            <p>Docker provides automatic DNS resolution for containers on the same network using service names as hostnames.</p>
+            <div class="bg-green-50 p-4 rounded-lg mt-4">
+              <h5 class="font-medium text-green-800 mb-2">Internal Communication:</h5>
+              <ul class="list-disc ml-5 space-y-1">
+                <li>WordPress can connect to MariaDB using hostname <code>mariadb</code></li>
+                <li>NGINX can proxy requests to WordPress using <code>wordpress</code></li>
+                <li>Adminer can manage MariaDB using <code>mariadb</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-semibold mb-3">Port Mapping & Security</h4>
+          <div class="overflow-x-auto">
+            <table class="min-w-full border-collapse">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="border border-gray-300 px-4 py-2 text-left">Service</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left">Internal Port</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left">External Port</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left">Protocol</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left">Security</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">NGINX</td>
+                  <td class="border border-gray-300 px-4 py-2">443</td>
+                  <td class="border border-gray-300 px-4 py-2">443</td>
+                  <td class="border border-gray-300 px-4 py-2">HTTPS</td>
+                  <td class="border border-gray-300 px-4 py-2">TLS Encryption</td>
+                </tr>
+                <tr class="bg-gray-50">
+                  <td class="border border-gray-300 px-4 py-2">WordPress</td>
+                  <td class="border border-gray-300 px-4 py-2">9000</td>
+                  <td class="border border-gray-300 px-4 py-2">9000</td>
+                  <td class="border border-gray-300 px-4 py-2">HTTP</td>
+                  <td class="border border-gray-300 px-4 py-2">Internal Only</td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">MariaDB</td>
+                  <td class="border border-gray-300 px-4 py-2">3306</td>
+                  <td class="border border-gray-300 px-4 py-2">3306</td>
+                  <td class="border border-gray-300 px-4 py-2">TCP</td>
+                  <td class="border border-gray-300 px-4 py-2">Internal Only</td>
+                </tr>
+                <tr class="bg-gray-50">
+                  <td class="border border-gray-300 px-4 py-2">Portainer</td>
+                  <td class="border border-gray-300 px-4 py-2">9443</td>
+                  <td class="border border-gray-300 px-4 py-2">9443</td>
+                  <td class="border border-gray-300 px-4 py-2">HTTPS</td>
+                  <td class="border border-gray-300 px-4 py-2">TLS Encryption</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deployment Section -->
+    <section id="deployment" class="scroll-mt-20">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Deployment & Management</h2>
+        <div class="w-20 h-1 bg-docker-blue mx-auto"></div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h3 class="text-2xl font-semibold mb-6">Docker Compose Configuration</h3>
+        
+        <div class="mb-6">
+          <p>The entire microservices architecture is defined and managed using Docker Compose, which simplifies deployment and orchestration.</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Key Features</h4>
+            <ul class="list-disc ml-5 space-y-2">
+              <li><strong>Service Dependencies:</strong> <code>depends_on</code> ensures correct startup order</li>
+              <li><strong>Volume Management:</strong> Persistent data storage for databases and files</li>
+              <li><strong>Secrets Management:</strong> Secure handling of passwords and sensitive data</li>
+              <li><strong>Environment Variables:</strong> Configuration externalization</li>
+              <li><strong>Restart Policies:</strong> <code>on-failure</code> for resilience</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 class="font-semibold text-lg mb-3">Deployment Commands</h4>
+            <div class="code-block p-4 rounded font-mono text-sm">
+              <span class="text-green-400"># Build and start all services</span><br>
+              <span class="text-green-400">$</span> docker-compose up -d<br><br>
+              
+              <span class="text-green-400"># View running services</span><br>
+              <span class="text-green-400">$</span> docker-compose ps<br><br>
+              
+              <span class="text-green-400"># View logs</span><br>
+              <span class="text-green-400">$</span> docker-compose logs<br><br>
+              
+              <span class="text-green-400"># Stop services</span><br>
+              <span class="text-green-400">$</span> docker-compose down<br><br>
+              
+              <span class="text-green-400"># Rebuild specific service</span><br>
+              <span class="text-green-400">$</span> docker-compose up -d --build nginx
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+          <h4 class="font-semibold text-yellow-800 mb-2">Important Notes</h4>
+          <ul class="list-disc ml-5 space-y-1">
+            <li>Ensure Docker and Docker Compose are installed on the host system</li>
+            <li>Create necessary directories for volume mounting (<code>/home/ien-niou/data/</code>)</li>
+            <li>Set up proper secrets files with secure passwords</li>
+            <li>Configure environment variables in <code>.env</code> file</li>
+            <li>Obtain SSL certificates for HTTPS configuration</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary Section -->
+    <section class="bg-gradient-to-r from-blue-500 to-docker-blue text-white rounded-xl shadow-lg p-8">
+        <div class="text-center mb-6">
+          <h2 class="text-3xl font-bold mb-4">Project Summary</h2>
+          <div class="w-20 h-1 bg-white mx-auto"></div>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+          <div class="text-center">
+            <div class="bg-white bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-cubes text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">9 Microservices</h3>
+            <p>Independent containers working together</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-shield-alt text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Secure Architecture</h3>
+            <p>TLS encryption and secrets management</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-white bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-rocket text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Easy Deployment</h3>
+            <p>Single command with Docker Compose</p>
+          </div>
+        </div>
+        
+        <div class="text-center">
+          <p class="text-lg mb-6">This project demonstrates a modern microservices architecture using Docker containers, showcasing best practices for containerization, networking, and orchestration.</p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <a href="#overview" class="bg-white text-docker-blue font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-blue-100">
+              <i class="fas fa-arrow-up mr-2"></i>Back to Top
+            </a>
+            <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 font-semibold py-2 px-6 rounded-lg transition duration-300">
+              <i class="fab fa-github mr-2"></i>View on GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-8 mt-16">
+      <div class="container mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="mb-4 md:mb-0">
+            <div class="flex items-center space-x-2">
+              <i class="fab fa-docker text-2xl text-docker-blue"></i>
+              <span class="text-xl font-bold">Inception Project</span>
+            </div>
+            <p class="text-blue-200 text-sm mt-1">Microservices Architecture & Implementation</p>
+          </div>
+          
+          <div class="flex space-x-6">
+            <a href="#" class="text-blue-200 hover:text-white transition duration-300">
+              <i class="fab fa-docker text-xl"></i>
+            </a>
+            <a href="#" class="text-blue-200 hover:text-white transition duration-300">
+              <i class="fab fa-github text-xl"></i>
+            </a>
+            <a href="#" class="text-blue-200 hover:text-white transition duration-300">
+              <i class="fas fa-envelope text-xl"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="border-t border-blue-800 mt-6 pt-6 text-center text-blue-200 text-sm">
+          <p>&copy; 2023 Inception Project. Demonstrating Docker microservices architecture.</p>
+          <p class="mt-2">Created with <i class="fas fa-heart text-red-400"></i> using Docker, Docker Compose, and modern DevOps practices.</p>
+        </div>
+      </div>
+    </footer>
+  
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="fixed bottom-6 right-6 bg-docker-blue text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 opacity-0 invisible">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+  
+    <script>
+      // Back to top button functionality
+      const backToTopButton = document.getElementById('backToTop');
+      
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+          backToTopButton.classList.remove('opacity-0', 'invisible');
+          backToTopButton.classList.add('opacity-100', 'visible');
+        } else {
+          backToTopButton.classList.remove('opacity-100', 'visible');
+          backToTopButton.classList.add('opacity-0', 'invisible');
+        }
+      });
+      
+      backToTopButton.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+          
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+      
+      // Update active navigation link on scroll
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('.nav-link');
+      
+      window.addEventListener('scroll', () => {
+        let current = '';
+        
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          
+          if (scrollY >= (sectionTop - 100)) {
+            current = section.getAttribute('id');
+          }
+        });
+        
+        navLinks.forEach(link => {
+          link.classList.remove('active-nav');
+          if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active-nav');
+          }
+        });
+      });
+      
+      // Mobile menu toggle (placeholder functionality)
+      document.querySelector('button.md\\:hidden').addEventListener('click', () => {
+        alert('Mobile menu functionality would be implemented here');
+      });
+    </script>
+  </body>
+  </html>
