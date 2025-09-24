@@ -54,6 +54,7 @@ services:
     environment:
       NGINX_HOST: ${DOMAIN_NAME}
       NGINX_PORT: ${NGINX_PORT}
+
   redis:
     build: ./bonus/redis/
     container_name: redis
@@ -102,6 +103,7 @@ services:
     networks:
       - inception
     restart: on-failure
+
   portainer:
     container_name: portainer
     image: portainer:1337.42
@@ -113,7 +115,6 @@ services:
     networks:
       - inception
     restart: on-failure
-
 
 networks:
   inception:
