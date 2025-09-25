@@ -106,7 +106,7 @@ services:
 
   portainer:
     container_name: portainer
-    image: portainer:1337.42
+    image: ismailenniou/portainer:v1.0
     build: ./bonus/portainer
     ports:
       - "9443:9443"
